@@ -14,7 +14,9 @@ class ProtocolBuffer {
 
 }
 
-var p = new ProtocolBuffer({id: 123})
+var p = new ProtocolBuffer({
+    id: 123
+});
 p.aa();
 console.log(p.id)
 
