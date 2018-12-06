@@ -1,8 +1,15 @@
 var net = require('net');
 
+
+var SERVER_HOST = '127.0.0.1';
+var SERVER_PORT = 8888;
+
+var PROXY_HOST = '192.168.1.180';
+var PROXY_PORT = 27017;
+
 var eventSocket = new net.Socket();
 var id;
-eventSocket.connect({host: '127.0.0.1', port: 8888}, () => {
+eventSocket.connect({host: SERVER_HOST, port: SERVER_PORT}, () => {
 
     console.log('connect server success.')
 
@@ -38,20 +45,12 @@ function connectIntSocket(data) {
     var proxy = new net.Socket();
 
     //先连接内网服务器，成功后连接外网
-    // var proxy_host = '192.168.1.180';
-    // var proxy_port = 27017;
-
-    var proxy_host = '192.168.1.114';
-    var proxy_port = 3389;
-
-    // var proxy_host = '192.168.1.179';
-    // var proxy_port = 22;
 
     //创建内网连接
-    proxy.connect({host: proxy_host, port: proxy_port}, () => {
+    proxy.connect({host: PROXY_HOST, port: PROXY_PORT}, () => {
 
         //连接成功后连接内网端口
-        server.connect({host: '127.0.0.1', port: data.intPort}, () => {
+        server.connect({host: SERVER_HOST, port: data.intPort}, () => {
 
             //连接成功后发送一条连接成功的通知
             server.write(JSON.stringify({outId: data.outId}));
@@ -59,13 +58,6 @@ function connectIntSocket(data) {
             //交换通道
             proxy.pipe(server);
             server.pipe(proxy);
-            // console.log('注册了事件');
-            // server.on('data', d => {
-
-            // console.log('回复：'+new Date().getTime())
-            // 发什么回什么
-            // server.write(d);
-            // });
         });
     });
     proxy.on('end', () => {
