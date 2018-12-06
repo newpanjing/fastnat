@@ -81,15 +81,22 @@ function eventHandler(socket) {
                 proxy.id = obj.outId;
 
                 console.log('内网主动连接，id=%s', proxy.id);
+
+                //只注册一次
+                var outSocket = outSockets[proxy.id];
+                outSocket.pipe(proxy);
+            } else {
+
+                //通过id 找到外网socket 并且恢复数据的接收
+                var outSocket = outSockets[proxy.id];
+                if (outSocket) {
+                    //第二次开始的数据包直接转发
+                    outSocket.write(data);
+                }
+
+
+
             }
-            //通过id 找到外网socket 并且恢复数据的接收
-            var outSocket = outSockets[proxy.id];
-
-            //恢复外网socket数据接收
-            // outSocket.resume();
-
-            proxy.pipe(outSocket);
-            outSocket.pipe(proxy);
 
         });
 

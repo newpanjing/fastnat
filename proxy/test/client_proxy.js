@@ -41,11 +41,11 @@ function connectIntSocket(data) {
     // var proxy_host = '192.168.1.180';
     // var proxy_port = 27017;
 
-    // var proxy_host = '192.168.1.114';
-    // var proxy_port = 3389;
+    var proxy_host = '192.168.1.114';
+    var proxy_port = 3389;
 
-    var proxy_host = '192.168.1.179';
-    var proxy_port = 22;
+    // var proxy_host = '192.168.1.179';
+    // var proxy_port = 22;
 
     //创建内网连接
     proxy.connect({host: proxy_host, port: proxy_port}, () => {
@@ -59,13 +59,19 @@ function connectIntSocket(data) {
             //交换通道
             proxy.pipe(server);
             server.pipe(proxy);
+            // console.log('注册了事件');
+            // server.on('data', d => {
 
+            // console.log('回复：'+new Date().getTime())
+            // 发什么回什么
+            // server.write(d);
+            // });
         });
     });
-    proxy.on('end',()=>{
+    proxy.on('end', () => {
         console.log('释放代理服务器');
         proxy.end();
     })
-    proxy.on('error', err => console.log("代理服务器报错",err));
+    proxy.on('error', err => console.log("代理服务器报错", err));
 
 }
