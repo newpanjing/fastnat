@@ -1,18 +1,24 @@
 # FAST NAT 全协议内网穿透
-`FAST NAT是基于WeNAT的扩展版，支持HTTP、TCP、UDP、WebSocket等协议。`
-## QQ群：524948153
+  FAST NAT是基于WeNAT的扩展版，支持HTTP、TCP、UDP、WebSocket等协议。
+  简单的说，就是可以给你的内网电脑分配一个公网IP和端口
+  例如：
+  > 123.1.1.1:8888 -> 192.168.1.123:3306 
+  
+  当外网服务器的8888端口收到数据包后，会转发给内网的3306端口，从而实现穿透。服务器做了个中转，和传统的P2P穿透不同。
+  ## 应用场景
+  + 本地发布网站
+  + 远程桌面
+  + SSH 本地服务器
+  + 访问本地mysql
+  + 访问本地redis
+  + 访问本地mongodb
+  ## 联系方式
+  + QQ群：524948153
+  + 邮箱：newpanjing@icloud.com
 
 # TCP协议和流程 
 ## 流程图
 ![](https://raw.githubusercontent.com/newpanjing/fastnat/master/doc/images/%E6%B5%81%E7%A8%8B%E5%9B%BE.jpg)
-
-## 应用场景
-+ 本地发布网站
-+ 远程桌面
-+ SSH 本地服务器
-+ 访问本地mysql
-+ 访问本地redis
-+ 访问本地mongodb
 
 ## 内外网代理流程
 + 内网和外网建立协议通道，用于主动连接通知
