@@ -11,4 +11,4 @@
     npm run build
     ```
 + idea 配置nw.js启动
-   ![](https://raw.githubusercontent.com/newpanjing/fastnat/master/nwapp/docs/images/idea.jpg)
+   ![](https://raw.githubusercontent.com/newpanjing/fastnat/master/app/docs/images/idea.jpg)
