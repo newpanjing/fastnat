@@ -33,8 +33,9 @@ eventSocket.connect({host: SERVER_HOST, port: SERVER_PORT}, () => {
     eventSocket.on('data', data => {
         eventSocket.emit('response', JSON.parse(data.toString()));
     });
-    eventSocket.on("error", err => console.log(err));
 });
+eventSocket.on("error", err => console.log("连接服务器出错：\n", err));
+
 
 /**
  * 连接内网的socket
@@ -64,11 +65,31 @@ function connectIntSocket(data) {
             proxy.pipe(server);
             server.pipe(proxy);
         });
+
+        var serverRelease = (err) => {
+            if (err) {
+                console.error(err);
+            }
+
+            console.log('释放外网Socket id:%s', data.id);
+            server.end();
+            server.destroy();
+        };
+        server.on('close', serverRelease);
+        server.on('error', serverRelease);
     });
-    proxy.on('end', () => {
-        console.log('释放代理服务器');
+
+    var proxyRelease = (err) => {
+        if (err) {
+            console.error(err);
+        }
+        console.log('释放代理Socket id:%s', data.id);
         proxy.end();
-    })
-    proxy.on('error', err => console.log("代理服务器报错", err));
+        proxy.destroy();
+
+    };
+
+    proxy.on('close', proxyRelease);
+    proxy.on('error', proxyRelease);
 
 }

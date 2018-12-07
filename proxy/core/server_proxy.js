@@ -8,8 +8,15 @@
 var net = require('net');
 var utils = require('./utils');
 
-//格式 id:socket
+//通信socket 格式 id=socket
 var eventSockets = {};
+
+//外网socket 格式 id=socket
+var outSockets = {};
+
+//内网socket 格式 id=socket，id和外网的id一致
+var intSockets = {};
+
 var port = 8888;
 /**
  * 创建通信server
@@ -30,20 +37,22 @@ var eventServer = net.createServer(socket => {
         if (err) {
             console.log('%s socket 报错：', id);
         }
-
+        console.log('释放通信socket id:%s', socket.id);
         //断开连接
         socket.end();
+        socket.destroy();
+
+        //从集合中删除
+        delete eventSockets[socket.id];
     }
     socket.on('error', handler);
-    socket.on('end', handler);
+    // socket.on('end', handler);
     socket.on('close', handler);
 
 });
 eventServer.on('error', err => console.log('服务器出错：', err));
 eventServer.listen(port, () => console.log('listen %s', port));
 
-
-var outSockets = {};
 
 /**
  * 通信协议socket处理
@@ -82,6 +91,9 @@ function eventHandler(socket) {
 
                 console.log('内网主动连接，id=%s', proxy.id);
 
+                //加入集合中
+                intSockets[proxy.id] = proxy;
+
                 //只注册一次
                 var outSocket = outSockets[proxy.id];
                 outSocket.pipe(proxy);
@@ -99,9 +111,28 @@ function eventHandler(socket) {
 
         });
 
+        //内网断开释放外网的socket
+        release(proxy, () => {
+            if (proxy.id) {
+
+                var id = proxy.id;
+
+                //释放内网socket内存
+                delete intSockets[id];
+
+                //释放外网socket
+                var out = outSockets[id];
+                if (out) {
+                    console.log('内网断开 释放外网socket id:%s', id);
+                    out.destroy();
+                }
+
+            }
+        });
+
     });
     proxyServer.on('error', err => console.log('内网监听出错：', err))
-    proxyServer.listen(intPort, () => console.log('内网监听端口：%s', intPort));
+    proxyServer.listen(intPort, () => console.log('会话id：%s 内网监听端口：%s', socket.id, intPort));
 
 
     //端口创建好了之后告诉内网
@@ -124,25 +155,53 @@ function eventHandler(socket) {
         //把socket加入集合
         outSockets[outId] = out;
 
+        release(out, () => {
 
-        //end、close、error 都关闭socket
-        var handler = function () {
-            console.log('释放socket id：%s', out.id);
-            out.end();
-            //释放内存
-            delete outSockets[out.id];
+            var id = out.id;
 
+            console.log('外网释放socket id：%s', id);
 
-            //TODO 内网的socket也需要释放
+            //从集合中删除
+            delete outSockets[id];
+
+            //内网的socket也需要释放
+            var int = intSockets[id];
+            if (int) {
+                console.log('外网断开释放内网 socket id:%s', id);
+                int.destroy();
+                delete intSockets[id];
+            }
 
             //TODO  server 一定时间内没有新连接或者有效连接，就进行释放
-        };
-        out.on('end', handler);
-        out.on('close', handler);
-        out.on('error', handler);
+
+        });
 
     });
     outServer.on('eror', error => console.log(error));
-    outServer.listen(outPort, () => console.log('外网端口开始监听 %s', outPort));
+    outServer.listen(outPort, () => console.log('会话id：%s 外网端口开始监听 %s', socket.id, outPort));
+
+}
+
+/**
+ * 释放socket
+ * @param socket
+ */
+function release(socket, callback) {
+
+    //socket断开的事件 为error和close，end事件不做处理
+    var handler = (err) => {
+        if (err) {
+            console.error('socket id=%s  报错:', socket.id, err);
+        }
+
+        callback(socket);
+
+        //半关闭 socket。例如发送一个 FIN 包。服务端仍可以发送数据。
+        socket.end();
+        //确保在该 socket 上不再有 I/O 活动。仅在出现错误的时候才需要（如解析错误等）。
+        socket.destroy();
+    };
+    socket.on('close', handler);
+    socket.on('error', handler);
 
 }
