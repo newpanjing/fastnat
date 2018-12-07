@@ -95,7 +95,6 @@ function eventHandler(socket) {
                 }
 
 
-
             }
 
         });
@@ -124,6 +123,23 @@ function eventHandler(socket) {
         // out.pause();
         //把socket加入集合
         outSockets[outId] = out;
+
+
+        //end、close、error 都关闭socket
+        var handler = function () {
+            console.log('释放socket id：%s', out.id);
+            out.end();
+            //释放内存
+            delete outSockets[out.id];
+
+
+            //TODO 内网的socket也需要释放
+
+            //TODO  server 一定时间内没有新连接或者有效连接，就进行释放
+        };
+        out.on('end', handler);
+        out.on('close', handler);
+        out.on('error', handler);
 
     });
     outServer.on('eror', error => console.log(error));

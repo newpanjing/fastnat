@@ -1,5 +1,10 @@
-var net = require('net');
+/**
+ *
+ * 客户端代理
+ * @type {module:net}
+ */
 
+var net = require('net');
 
 var SERVER_HOST = '127.0.0.1';
 var SERVER_PORT = 8888;

@@ -15,10 +15,13 @@
   ## 联系方式
   + QQ群：524948153
   + 邮箱：newpanjing@icloud.com
-
+  ## 开发语言
+  + 服务端、web网站：node.js
+  + 客户端：nw.js + node.js
+  
 # TCP协议和流程 
 ## 流程图
-![](https://raw.githubusercontent.com/newpanjing/fastnat/master/doc/images/%E6%B5%81%E7%A8%8B%E5%9B%BE.jpg)
+![](https://raw.githubusercontent.com/newpanjing/fastnat/master/docs/images/%E6%B5%81%E7%A8%8B%E5%9B%BE.jpg)
 
 ## 内外网代理流程
 + 内网和外网建立协议通道，用于主动连接通知
@@ -41,6 +44,15 @@
     在第一次连接服务器的时候，需要带上用户的token，服务器进行校验合法后开放2个端口提供给后续使用。
     在后续的流程中，不做任何校验。虽然有安全风险，但是常见的TCP应用：Mysql、Mongodb、Redis等，都有用户机制可以保护。
 
++ ### 协议类型
+    > 暂定三种协议
+    
+    |类型|
+    |---|
+    |TCP|
+    |UDP|
+    |HTTP|
+    
 + ### 和通信服务器连接
     + 基本信息响应
     
@@ -53,7 +65,8 @@
         | intPort |    int(5)   |   内网连接的端口,5位数的端口，30000-65535 |
         | outPort | int(5) |    外网连接的端口 |
         | command | string | 操作命令 |
-    
+        | protocol| string | [协议类型](#协议类型) |
+        
         + 举个栗子🌰
         ```javascript
          {
