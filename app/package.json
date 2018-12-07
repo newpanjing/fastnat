@@ -1,0 +1,27 @@
+{
+  "name": "app",
+  "version": "1.0.0",
+  "description": "",
+  "main": "public/index.html",
+  "window": {
+    "title": "fastnat-app",
+    "toolbar": true,
+    "frame": false,
+    "width": 1008,
+    "height": 750,
+    "position": "center",
+    "min_width": 400,
+    "min_height": 200
+  },
+  "scripts": {
+    "build": "webpack --config webpack.config.js --progress --colors"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "vue": "^2.5.17"
+  },
+  "devDependencies": {
+    "webpack": "^2.4.1"
+  }
+}
