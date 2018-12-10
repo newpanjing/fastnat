@@ -7,8 +7,8 @@
     "title": "fastnat-app",
     "toolbar": true,
     "frame": false,
-    "width": 1008,
-    "height": 750,
+    "width": 1000,
+    "height": 550,
     "position": "center",
     "min_width": 400,
     "min_height": 200
